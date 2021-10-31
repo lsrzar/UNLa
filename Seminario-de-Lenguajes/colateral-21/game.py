@@ -215,13 +215,13 @@ while True:
             
         # Controles
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP | event.key == pygame.K_w:
+            if event.key == pygame.K_UP or event.key == pygame.K_w:
                 player.up()
-            elif event.key == pygame.K_DOWN | event.key == pygame.K_s:
+            elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
                 player.down()
-            elif event.key == pygame.K_LEFT | event.key == pygame.K_a:
+            elif event.key == pygame.K_LEFT or event.key == pygame.K_a:
                 player.left()
-            elif event.key == pygame.K_RIGHT | event.key == pygame.K_d:
+            elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                 player.right()
             elif event.key == pygame.K_SPACE:
                 fire_missile()
