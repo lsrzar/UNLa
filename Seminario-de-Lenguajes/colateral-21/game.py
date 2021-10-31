@@ -274,12 +274,11 @@ while True:
                     player.kills += 1
                     # Experimento/Concepto para items de mejora
                     if player.kills >= 50:
+                        BLACK = (25, 10, 25)
                         missile.image = pygame.image.load('assets/missileM.png').convert_alpha()
                         missile.speed = MISSILE_SPEED*1.5
+                        MISSILE_DMG = MISSILE_DMG*1.1
                     if player.kills % 10 == 0:
-                        # Experimento/Concepto para items de mejora
-                        MISSILE_DMG = MISSILE_DMG*1.02
-                        # Experimento/Concepto para items de mejora
                         enemy.surface = pygame.image.load('assets/boss.png').convert_alpha()
                         enemy.max_health = 50
                         enemy.health = enemy.max_health
