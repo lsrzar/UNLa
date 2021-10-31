@@ -8,16 +8,19 @@
 # Moro, Enzo Sebastián      —
 # Suarez Arnaldi, Leonel    — 39.810.113
 
+#region Imports
 import pygame
 import sys
 import random
 
 from pygame.constants import K_w
+#endregion
 
 pygame.init()
-pygame.display.set_caption('COLATERAL-21')
+pygame.display.set_caption('COLATERAL-21') # Título del juego
 clock = pygame.time.Clock()
 
+#region Constantes
 WIDTH = 800
 HEIGHT = 600
 
@@ -26,14 +29,22 @@ WHITE = (255, 255, 255)
 GREEN = (0, 180, 0)
 RED = (200, 0, 0)
 
+LIFEBAR_WIDTH = 3
+MISSILE_SPEED = 10
+MISSILE_DMG = 4
+#endregion
+
+#region Pantalla
 # Crea la pantalla
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
+# Icono del juego
 icon = pygame.image.load('assets/icon.png').convert_alpha()
 icon = pygame.transform.scale(icon , (64, 64))
 pygame.display.set_icon(icon)
+#endregion
 
-# Crea clase Player
+#region Player
 class Player():
     def __init__(self):
         self.speed = 3.5
@@ -89,8 +100,10 @@ class Player():
         screen.blit(self.image, (int(self.x), int(self.y)))
         
         # Randeriza la barra de vida
-        pygame.draw.line(screen, GREEN, (int(self.x), int(self.y)), (int(self.x + (40 * (self.health/self.max_health))), int(self.y)), 2)
+        pygame.draw.line(screen, GREEN, (int(self.x), int(self.y)), (int(self.x + (40 * (self.health/self.max_health))), int(self.y)), LIFEBAR_WIDTH)
+#endregion
 
+#region Missile
 class Missile():
     def __init__(self):
         self.x = 0
@@ -98,12 +111,13 @@ class Missile():
         self.dx = 0
         self.image = pygame.image.load('assets/missile.png').convert_alpha()
         self.state = 'ready'
+        self.speed = MISSILE_SPEED
     
     def fire(self):
         self.state = 'firing'
         self.x = player.x + 25
         self.y = player.y + 16
-        self.dx = 7
+        self.dx = self.speed
     
     def move(self):
         if self.state == 'firing':
@@ -118,7 +132,9 @@ class Missile():
 
     def render(self):
         screen.blit(self.image, (int(self.x), int(self.y)))
+#endregion
 
+#region Enemy
 class Enemy():
     def __init__(self):
         self.x = 800
@@ -156,8 +172,10 @@ class Enemy():
         screen.blit(self.surface, (int(self.x), int(self.y)))
         
         # Randeriza barra de vida
-        pygame.draw.line(screen, RED, (int(self.x), int(self.y)), (int(self.x + (30 * (self.health/self.max_health))), int(self.y)), 2)
+        pygame.draw.line(screen, RED, (int(self.x), int(self.y)), (int(self.x + (30 * (self.health/self.max_health))), int(self.y)), LIFEBAR_WIDTH)
+#endregion
 
+#region Star
 class Star():
     def __init__(self):
         self.x = random.randint(0, 1000)
@@ -179,15 +197,18 @@ class Star():
 
     def render(self):
         screen.blit(self.surface, (int(self.x), int(self.y)))
+#endregion
 
-
+#region SFX & VFX
 # Crea sonidos
 missile_sound = pygame.mixer.Sound('assets/missile.ogg')
 explosion_sound = pygame.mixer.Sound('assets/explosion.wav')
 
 # Crea fuente
 font = pygame.font.SysFont("agencyfb", 24)
+#endregion
 
+#region Objetos
 # Crea objetos
 player = Player()
 missiles = [Missile(), Missile(), Missile()]
@@ -207,8 +228,10 @@ def fire_missile():
             missile.fire()
             missile_sound.play()
             break
+#endregion
 
-# Loop principal
+####LOOP PRINCIPAL###
+#region Main
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT: 
@@ -243,13 +266,20 @@ while True:
         for missile in missiles:
             if enemy.distance(missile) < 20:
                 explosion_sound.play()
-                enemy.health -= 4
+                enemy.health -= MISSILE_DMG
                 if enemy.health <= 0:
                     enemy.x = random.randint(800, 900)
                     enemy.y = random.randint(0, 550)
                     
                     player.kills += 1
+                    # Experimento/Concepto para items de mejora
+                    if player.kills > 10:
+                        missile.image = pygame.image.load('assets/missileM.png').convert_alpha()
                     if player.kills % 10 == 0:
+                        # Experimento/Concepto para items de mejora
+                        MISSILE_DMG = MISSILE_DMG*1.05
+                        missile.speed = MISSILE_SPEED*2
+                        # Experimento/Concepto para items de mejora
                         enemy.surface = pygame.image.load('assets/boss.png').convert_alpha()
                         enemy.max_health = 50
                         enemy.health = enemy.max_health
@@ -320,3 +350,4 @@ while True:
     pygame.display.flip()
     
     clock.tick(60)
+#endregion
