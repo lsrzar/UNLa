@@ -15,15 +15,15 @@ import random
 from pygame.constants import K_w
 
 pygame.init()
-pygame.display.set_caption("COLATERAL-21")
+pygame.display.set_caption('COLATERAL-21')
 clock = pygame.time.Clock()
 
 WIDTH = 800
 HEIGHT = 600
 
-BLACK = (15, 15, 15)
+BLACK = (15, 15, 25)
 WHITE = (255, 255, 255)
-GREEN = (0, 200, 0)
+GREEN = (0, 180, 0)
 RED = (200, 0, 0)
 
 # Crea la pantalla
@@ -38,7 +38,7 @@ class Player():
     def __init__(self):
         self.speed = 3.5
         self.x = 0
-        self.y = 0
+        self.y = HEIGHT//2
         self.dy = 0
         self.dx = 0
         self.image = pygame.image.load('assets/player.png').convert_alpha()
@@ -61,8 +61,9 @@ class Player():
         self.dx = self.speed
     
     def move(self):
-        self.y = self.y + self.dy
-        self.x = self.x + self.dx/1.5 # Calibra el movimiento diagonal
+        # Calibra el movimiento diagonal
+        self.y = self.y + self.dy/1.2
+        self.x = self.x + self.dx/1.2 
         
         # Chequeo de colisión
         if self.y < 0:
@@ -96,20 +97,20 @@ class Missile():
         self.y = 1000
         self.dx = 0
         self.image = pygame.image.load('assets/missile.png').convert_alpha()
-        self.state = "ready"
+        self.state = 'ready'
     
     def fire(self):
-        self.state = "firing"
+        self.state = 'firing'
         self.x = player.x + 25
         self.y = player.y + 16
         self.dx = 7
     
     def move(self):
-        if self.state == "firing":
+        if self.state == 'firing':
             self.x = self.x + self.dx 
             
         if self.x > 800:
-            self.state = "ready"
+            self.state = 'ready'
             self.y = 1000
 
     def distance(self, other):
@@ -127,7 +128,7 @@ class Enemy():
         self.surface = pygame.image.load('assets/enemy.png').convert_alpha()
         self.max_health = random.randint(5, 15)
         self.health = self.max_health
-        self.type = "enemy"
+        self.type = 'enemy'
         
 
     def move(self):
@@ -162,7 +163,7 @@ class Star():
         self.x = random.randint(0, 1000)
         self.y = random.randint(0, 550)
         self.dx = random.randint(10, 50) / -30
-        images = ["assets/yellow_star.png", "assets/red_star.png", "assets/white_star.png"]
+        images = ['assets/yellow_star.png', 'assets/red_star.png', 'assets/white_star.png']
         self.surface = pygame.image.load(random.choice(images))
 
     def move(self):
@@ -181,8 +182,8 @@ class Star():
 
 
 # Crea sonidos
-missile_sound = pygame.mixer.Sound("assets/missile.ogg")
-explosion_sound = pygame.mixer.Sound("assets/explosion.wav")
+missile_sound = pygame.mixer.Sound('assets/missile.ogg')
+explosion_sound = pygame.mixer.Sound('assets/explosion.wav')
 
 # Crea fuente
 font = pygame.font.SysFont("agencyfb", 24)
