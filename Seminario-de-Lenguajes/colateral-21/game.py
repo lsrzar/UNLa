@@ -1,16 +1,18 @@
 # SEMINARIO DE LENGUAJES — 2021
 # Proyecto de Videojuego en Pygame
 # ————————————INTEGRANTES————————————
-# Cruz, Denis            —
-# Fernandez, Nahuel      —
-# Guevara, Agustín       —
-# Luoni, Brian           —
-# Moro, Enzo             —
-# Suarez Arnaldi, Leonel — 39.810.113
+# Cruz, Denis Liam          —
+# Fernandez, Nahuel         —
+# Guevara, Agustín Ezequiel — 43.507.859
+# Luoni, Brian Ezequiel     — 43.389.976
+# Moro, Enzo Sebastián      —
+# Suarez Arnaldi, Leonel    — 39.810.113
 
 import pygame
 import sys
 import random
+
+from pygame.constants import K_w
 
 pygame.init()
 pygame.display.set_caption("COLATERAL-21")
@@ -213,13 +215,13 @@ while True:
             
         # Controles
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP:
+            if event.key == pygame.K_UP | event.key == pygame.K_w:
                 player.up()
-            elif event.key == pygame.K_DOWN:
+            elif event.key == pygame.K_DOWN | event.key == pygame.K_s:
                 player.down()
-            elif event.key == pygame.K_LEFT:
+            elif event.key == pygame.K_LEFT | event.key == pygame.K_a:
                 player.left()
-            elif event.key == pygame.K_RIGHT:
+            elif event.key == pygame.K_RIGHT | event.key == pygame.K_d:
                 player.right()
             elif event.key == pygame.K_SPACE:
                 fire_missile()
