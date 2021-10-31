@@ -132,12 +132,12 @@ class Enemy():
         self.x = self.x + self.dx
         self.y = self.y + self.dy
         
-        # Border check
+        # Chequeo de bordes
         if self.x < -30:
             self.x = random.randint(800, 900)
             self.y = random.randint(0, 550) 
             
-        # Check for border collision
+        # Chequeo de colisión
         if self.y < 0:
             self.y = 0
             self.dy *= -1
@@ -152,7 +152,7 @@ class Enemy():
     def render(self):
         screen.blit(self.surface, (int(self.x), int(self.y)))
         
-        # Draw health meter
+        # Randeriza barra de vida
         pygame.draw.line(screen, RED, (int(self.x), int(self.y)), (int(self.x + (30 * (self.health/self.max_health))), int(self.y)), 2)
 
 class Star():
@@ -166,7 +166,7 @@ class Star():
     def move(self):
         self.x = self.x + self.dx
         
-        # Border check
+        # Chequeo de bordes
         if self.x < 0:
             self.x = random.randint(800, 900)
             self.y = random.randint(0, 550)        
@@ -178,14 +178,14 @@ class Star():
         screen.blit(self.surface, (int(self.x), int(self.y)))
 
 
-# Create sounds
+# Crea sonidos
 missile_sound = pygame.mixer.Sound("assets/missile.ogg")
 explosion_sound = pygame.mixer.Sound("assets/explosion.wav")
 
-# Create font
+# Crea fuente
 font = pygame.font.SysFont("agencyfb", 24)
 
-# Create objects
+# Crea objetos
 player = Player()
 missiles = [Missile(), Missile(), Missile()]
 
@@ -198,7 +198,7 @@ for _ in range(30):
     stars.append(Star())
 
 def fire_missile():
-    # Is the missile ready
+    # Misiles listos
     for missile in missiles:
         if missile.state == "ready":
             missile.fire()
@@ -280,7 +280,7 @@ while True:
             enemy.y = random.randint(0, 550)
             
             if player.health <= 0:
-                print("Game over!")
+                print("GAME OVER")
                 pygame.quit()
                 exit()    
 
