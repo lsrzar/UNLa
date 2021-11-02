@@ -25,24 +25,30 @@ WIDTH = 800
 HEIGHT = 600
 
 BLACK = (15, 15, 25)
-GREY = (55,55,55)
+GREY = (65,65,65)
 WHITE = (255, 255, 255)
 GREEN = (0, 180, 0)
-RED = (200, 0, 0)
+RED = (180, 0, 0)
+SCORE_COLOR = (random.randint(0,20), random.randint(180,255), random.randint(180,200))
+KILLS_COLOR = (random.randint(170,255), random.randint(0,50), 0)
 
 LIFEBAR_WIDTH = 3
 MISSILE_SPEED = 6
 MISSILE_DMG = 3
+PLAYER_SPEED = 3.5
 
 SFX_VOLUME = 0.5
 BGM_VOLUME = 0.2
+
+# Dificultad
+ENEMY_AMOUNT = 3
 #endregion
 
 #region Pantalla
-# Crea la pantalla
+## Crea la pantalla
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
-# Icono del juego
+## Icono del juego
 icon = pygame.image.load('assets/icon.png').convert_alpha()
 icon = pygame.transform.scale(icon , (64, 64))
 pygame.display.set_icon(icon)
@@ -51,7 +57,7 @@ pygame.display.set_icon(icon)
 #region Player
 class Player():
     def __init__(self):
-        self.speed = 3.5
+        self.speed = PLAYER_SPEED
         self.x = 0
         self.y = HEIGHT//2
         self.dy = 0
@@ -115,13 +121,12 @@ class Missile():
         self.dx = 0
         self.image = pygame.image.load('assets/missile.png').convert_alpha()
         self.state = 'ready'
-        self.speed = MISSILE_SPEED
     
     def fire(self):
         self.state = 'firing'
         self.x = player.x + 25
         self.y = player.y + 16
-        self.dx = self.speed
+        self.dx = MISSILE_SPEED
     
     def move(self):
         if self.state == 'firing':
@@ -150,7 +155,6 @@ class Enemy():
         self.max_health = random.randint(5, 15)
         self.health = self.max_health
         self.type = 'enemy'
-
 
     def move(self):
         self.x = self.x + self.dx
@@ -215,11 +219,12 @@ def draw_text(surface, text, size, x, y, color):
 
 def show_menu():
     screen.blit(screen, [0,0])
+    screen.fill(BLACK)
     draw_text(screen, "COLATERAL-21", 65, WIDTH//2, HEIGHT//4, RED)
     draw_text(screen, "CONTROLES", 28, WIDTH // 2, HEIGHT // 2.3, WHITE)
     draw_text(screen, "Movimiento: FLECHAS", 18, WIDTH // 2, HEIGHT // 1.9, WHITE)
     draw_text(screen, "Disparo:   BARRA ESP.", 18, WIDTH // 2, HEIGHT // 1.8, WHITE)
-    draw_text(screen, "Presione cualquier tecla", 12, WIDTH // 2, HEIGHT * 3/4, WHITE)
+    draw_text(screen, "Presione ENTER para jugar", 12, WIDTH // 2, HEIGHT * 3/4, WHITE)
     draw_text(screen, "Hecho por", 10, WIDTH // 2, HEIGHT * 3.5/4, WHITE)
     draw_text(screen, "Suarez Arnaldi, Leonel", 10, WIDTH // 2, HEIGHT * 3.56/4, GREY)
     draw_text(screen, "Moro, Enzo Sebastian", 10, WIDTH // 2, HEIGHT * 3.62/4, GREY)
@@ -235,9 +240,8 @@ def show_menu():
             if event.type == pygame.QUIT:
                 pygame.quit()
             if event.type == pygame.KEYUP:
-                waiting = False
-
-
+                if event.key == pygame.K_RETURN:
+                    waiting = False
 #endregion
 
 #region SFX & VFX
@@ -259,36 +263,47 @@ crash_sound.set_volume(SFX_VOLUME - 0.2)
 font = pygame.font.Font('assets/font/kenvector_future.ttf', 16)
 #endregion
 
-#region Objetos
-# Crea objetos
-player = Player()
-missiles = [Missile(), Missile(), Missile()]
-
-enemies = []
-for _ in range(5):
-    enemies.append(Enemy())
-    
-stars = []
-for _ in range(30):
-    stars.append(Star())
-
-def fire_missile():
-    # Misiles listos
-    for missile in missiles:
-        if missile.state == "ready":
-            missile.fire()
-            pygame.mixer.Channel(1).play(missile_sound)
-            break
-#endregion
-
 ####LOOP PRINCIPAL###
 #region Main
 game_over = True
 running = True
+debug = False
 while running:
     if game_over:
         show_menu()
         game_over = False
+        #region Objetos
+        # Crea objetos
+        player = Player()
+        # Resetea variables
+        BLACK = (15, 15, 25)
+        MISSILE_SPEED = 6
+        MISSILE_DMG = 3
+        ENEMY_AMOUNT = 3
+        PLAYER_SPEED = 3.5
+        player.score = 0
+        player.kills = 0
+
+        missiles = [Missile(), Missile(), Missile()]
+
+        enemies = []
+        for _ in range(ENEMY_AMOUNT):
+            enemies.append(Enemy())
+            
+        stars = []
+        for _ in range(30):
+            stars.append(Star())
+
+        def fire_missile():
+            # Misiles listos
+            for missile in missiles:
+                if missile.state == "ready":
+                    missile.fire()
+                    pygame.mixer.Channel(1).play(missile_sound)
+                    break
+        #endregion
+        
+    
     bgm.play(-1)
     for event in pygame.event.get():
         if event.type == pygame.QUIT: 
@@ -307,10 +322,16 @@ while running:
                 player.right()
             elif event.key == pygame.K_SPACE:
                 fire_missile()
+            elif event.key == pygame.K_ESCAPE:
+                running = False
+            elif event.key == pygame.K_TAB:
+                debug = True
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_TAB:
+                debug = False
 
     # Actualiza objetos
     player.move()
-    
     for missile in missiles:
         missile.move()
     
@@ -323,7 +344,6 @@ while running:
         # Chequeo de colisión
         for missile in missiles:
             if enemy.distance(missile) < 20:
-                #explosion_sound.play()
                 pygame.mixer.Channel(0).play(explosion_sound)
                 enemy.health -= MISSILE_DMG
                 if enemy.health <= 0:
@@ -332,13 +352,18 @@ while running:
                     enemy.y = random.randint(0, 550)
                     
                     player.kills += 1
+                    KILLS_COLOR = (random.randint(170,255), random.randint(0,50), 0)
                     # Experimento/Concepto para items de mejora
                     if player.kills >= 50:
                         BLACK = (25, 10, 25)
-                        missile.image = pygame.image.load('assets/missileM.png').convert_alpha()
-                        missile.speed = 10
-                        MISSILE_DMG = 4.5
+                        y_missile = pygame.image.load('assets/missileM.png').convert_alpha()
+                        missile.image = y_missile
+                        MISSILE_SPEED = 16
+                        MISSILE_DMG = 5
+                        PLAYER_SPEED = 5
                     if player.kills % 10 == 0:
+                        enemies.append(Enemy())
+                        ENEMY_AMOUNT += 1
                         enemy.surface = pygame.image.load('assets/boss.png').convert_alpha()
                         enemy.max_health = 50
                         enemy.health = enemy.max_health
@@ -361,6 +386,7 @@ while running:
                 
                 # Añadir al contador
                 player.score += 10
+                SCORE_COLOR = (random.randint(0,20), random.randint(180,255), random.randint(180,255))
         
         # Chequeo de colisión
         if enemy.distance(player) < 20:
@@ -373,8 +399,8 @@ while running:
             
             if player.health <= 0:
                 print("GAME OVER")
-                pygame.quit()
-                exit()
+                bgm.stop()
+                game_over = True
 
     # Randerizar
     # Llena el fondo de color
@@ -400,14 +426,24 @@ while running:
             ammo += 1
     
     for x in range(ammo):
-        screen.blit(missile.image, (630 + 30 * x, 40))
+        screen.blit(missile.image, (665 + 30 * x, 60))
     
     # Randerizar contador
-    score_surface = font.render(f"Score: {player.score}   Kills: {player.kills}", True, WHITE)
-    ammo_surface = font.render(f"Ammo: ", True, WHITE)
-    screen.blit(score_surface, (550, 10))
-    screen.blit(ammo_surface, (550, 35))
+    # SCORE
+    draw_text(screen, f"SCORE", 14, 680, 20, WHITE)
+    draw_text(screen, f"{player.score}", 14, 680, 35, SCORE_COLOR)
+    # KILLS 
+    draw_text(screen, f"KILLS", 14, 740, 20, WHITE)
+    draw_text(screen, f"{player.kills}", 14, 740, 35, KILLS_COLOR)
     
+    # Randerizar debug 
+    if debug:
+        draw_text(screen, f"ATT.DAMAGE: {MISSILE_DMG}", 10, 650, 550, GREY)
+        draw_text(screen, f"ATT.SPEED: {MISSILE_SPEED}", 10, 650, 558, GREY)
+        draw_text(screen, f"VELOCITY: {PLAYER_SPEED}", 10, 650, 566, GREY)
+        draw_text(screen, f"HEALTH: {player.health}", 10, 650, 574, GREY)
+        draw_text(screen, f"ENEMIES: {ENEMY_AMOUNT}", 10, 650, 574+8, GREY)
+
     pygame.display.flip()
     
     clock.tick(60)
