@@ -1,12 +1,12 @@
 # SEMINARIO DE LENGUAJES — 2021
 # Proyecto de Videojuego en Pygame
 # ————————————INTEGRANTES————————————
-# Cruz, Denis Liam          —
-# Fernandez, Nahuel         —
-# Guevara, Agustín Ezequiel — 43.507.859
-# Luoni, Brian Ezequiel     — 43.389.976
-# Moro, Enzo Sebastián      —
-# Suarez Arnaldi, Leonel    — 39.810.113
+# Cruz, Denis Liam
+# Fernandez, Nahuel
+# Guevara, Agustín Ezequiel
+# Luoni, Brian Ezequiel
+# Moro, Enzo Sebastián
+# Suarez Arnaldi, Leonel
 
 #region Imports
 import pygame
